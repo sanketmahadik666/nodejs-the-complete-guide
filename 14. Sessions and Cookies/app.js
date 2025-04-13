@@ -1,4 +1,7 @@
-const path = require('path');
+ 
+ 
+ const path = require('path');
+require('dotenv').config();
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -6,10 +9,12 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 
-const envKeys = require('./keys');
+//const envKeys = require('./keys');
 
 const errorsController = require('./controllers/errors.js');
 
+
+const MONGODBURI = process.env.MONGODBURI || 'mongodb://localhost:27017/mydatabase';
 // Routes
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -30,7 +35,7 @@ app.set('views', 'views');
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
-    secret: envKeys.SESSION_SECRET_KEY,
+    secret: process.env.SESSION_SECRET_KEY,
     resave: false,
     saveUninitialized: false,
     store: store
@@ -58,7 +63,7 @@ app.use(authRoutes);
 app.use(errorsController.get404);
 
 mongoose
-    .connect(envKeys.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .connect(MONGODBURI, { useNewUrlParser: true, useUnifiedTopology: true })
     // .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(result => {
         return User.findOne();
@@ -76,6 +81,8 @@ mongoose
         return user.save();
     })
     .then(result => {
-        app.listen(envKeys.PORT);
+        app.listen(3000, () => {
+            console.log('Server is running on port 3000');
+        });
     })
     .catch(err => console.log(err));

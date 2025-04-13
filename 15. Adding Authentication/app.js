@@ -71,6 +71,8 @@ app.use(errorsController.get404);
 mongoose
     .connect(envKeys.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(result => {
-        app.listen(envKeys.PORT);
+        app.listen(envKeys.PORT, () => {
+            console.log(`Server is running on port ${envKeys.PORT}`);
+        });
     })
     .catch(err => console.log(err));
